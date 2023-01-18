@@ -44,8 +44,8 @@ jobs:
       SonarCloud: 'SonarCloud'
       organization: 'hegdenaveensandbox'
       scannerMode: 'MSBuild'
-      projectKey: 'hegdenaveensandbox_sonardev'
-      projectName: 'sonardev'
+      projectKey: 'AE:Project1'
+      projectName: 'Project1'
       extraProperties: |
         # Additional properties that will be passed to the scanner, 
         # Put one key=value per line, example:
