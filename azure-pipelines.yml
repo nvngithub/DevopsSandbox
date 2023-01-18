@@ -43,7 +43,7 @@ jobs:
     displayName: Dotnet Build
     inputs:
       command: build
-      projects: '**/DevopsSandbox/DevopsSandbox/DevopsSandbox.csproj'
+      projects: '**/DevopsSandbox/DevopsSandbox.csproj'
       arguments: '--configuration Release'
 
   - script: |
