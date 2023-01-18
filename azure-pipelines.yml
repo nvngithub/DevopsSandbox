@@ -62,6 +62,8 @@ jobs:
       dotnet test --logger trx --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(Build.SourcesDirectory)/coverage/DevopsSandbox 'DevopsSandbox/DevopsSandbox.csproj' 
     displayName: 'Dotnet Test'
 
+  - task: SonarCloudAnalyze@1
+
   - task: DotNetCoreCLI@2
     displayName: Dotnet Publish
     inputs:
