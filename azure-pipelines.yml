@@ -33,6 +33,8 @@ jobs:
   pool:
     vmImage: ubuntu-18.04
   steps:
+  - checkout: self
+    fetchDepth: 0
 
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet 4.4.1'
