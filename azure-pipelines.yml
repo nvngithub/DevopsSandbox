@@ -1,0 +1,78 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+variables:
+  MajorVersion: 1
+  MinorVersion: 0
+  PatchVersion: 0
+
+trigger:
+  branches:
+    include:
+    - master
+
+  paths:
+    include:
+    - DevopsSandbox/*
+
+pr:
+  branches:
+    include:
+    - master
+
+  paths:
+    include:
+    - DevopsSandbox/*
+
+name: $(MajorVersion).$(MinorVersion).$(PatchVersion).$(Rev:r)
+
+jobs:
+- job: Build_Sandbox
+  pool:
+    vmImage: ubuntu-18.04
+  steps:
+
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 4.4.1'
+    inputs:
+      versionSpec: 4.4.1
+
+  - task: DotNetCoreCLI@2
+    displayName: Dotnet Build
+    inputs:
+      command: build
+      projects: '**/DevopsSandbox/DevopsSandbox/DevopsSandbox.csproj'
+      arguments: '--configuration Release'
+
+  - script: |
+      dotnet test --logger trx --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(Build.SourcesDirectory)/coverage/DevopsSandbox 'DevopsSandbox/DevopsSandbox/DevopsSandbox.csproj' 
+    displayName: 'Dotnet Test'
+  
+  - script: |
+      dotnet tool install dotnet-reportgenerator-globaltool --tool-path . 
+      ./reportgenerator "-reports:$(Build.SourcesDirectory)/coverage/DevopsSandbox.opencover.xml" "-targetdir:coverage/Cobertura" "-reporttypes:Cobertura;HTMLInline;HTMLChart"
+    displayName: Run Reportgenerator in Linux Image
+
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      summaryFileLocation: $(Build.SourcesDirectory)/coverage/Cobertura/Cobertura.xml
+      reportDirectory: $(Build.SourcesDirectory)/coverage/Cobertura
+      codecoverageTool: cobertura
+
+  - task: DotNetCoreCLI@2
+    displayName: Dotnet Publish
+    inputs:
+      command: 'publish'
+      projects: '**/DevopsSandbox/DevopsSandbox/DevopsSandbox.csproj'
+      publishWebProjects: false
+      arguments: '--configuration Release --output $(System.DefaultWorkingDirectory)/DevopsSandbox/DevopsSandbox/bin/Release/net5.0'
+      zipAfterPublish: True
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.SourcesDirectory)/DevopsSandbox/DevopsSandbox/bin/Release/net5.0'
+      artifactName: 'sanbox-artifact'
+    displayName: 'Publish Artifact'    
