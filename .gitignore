@@ -1,0 +1,5 @@
+DevopsSandbox/bin/*
+DevopsSandbox/obj/*
+DevopsSandbox.Test/bin/*
+DevopsSandbox.Test/obj/*
+.vs
