@@ -54,7 +54,7 @@ jobs:
     displayName: Dotnet Publish
     inputs:
       command: 'publish'
-      projects: '**/DevopsSandbox/DevopsSandbox/DevopsSandbox.csproj'
+      projects: '**/DevopsSandbox/DevopsSandbox.csproj'
       publishWebProjects: false
       arguments: '--configuration Release --output $(System.DefaultWorkingDirectory)/DevopsSandbox/DevopsSandbox/bin/Release/net5.0'
       zipAfterPublish: True
