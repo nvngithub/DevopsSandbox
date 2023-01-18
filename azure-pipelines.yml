@@ -49,18 +49,6 @@ jobs:
   - script: |
       dotnet test --logger trx --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(Build.SourcesDirectory)/coverage/DevopsSandbox 'DevopsSandbox/DevopsSandbox.csproj' 
     displayName: 'Dotnet Test'
-  
-  - script: |
-      dotnet tool install dotnet-reportgenerator-globaltool --tool-path . 
-      ./reportgenerator "-reports:$(Build.SourcesDirectory)/coverage/DevopsSandbox/DevopsSandbox.opencover.xml" "-targetdir:coverage/Cobertura" "-reporttypes:Cobertura;HTMLInline;HTMLChart"
-    displayName: Run Reportgenerator in Linux Image
-
-
-  - task: PublishCodeCoverageResults@1
-    inputs:
-      summaryFileLocation: $(Build.SourcesDirectory)/coverage/Cobertura/Cobertura.xml
-      reportDirectory: $(Build.SourcesDirectory)/coverage/Cobertura
-      codecoverageTool: cobertura
 
   - task: DotNetCoreCLI@2
     displayName: Dotnet Publish
