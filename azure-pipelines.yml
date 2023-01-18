@@ -47,7 +47,7 @@ jobs:
       arguments: '--configuration Release'
 
   - script: |
-      dotnet test --logger trx --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(Build.SourcesDirectory)/coverage/DevopsSandbox 'DevopsSandbox/DevopsSandbox/DevopsSandbox.csproj' 
+      dotnet test --logger trx --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(Build.SourcesDirectory)/coverage/DevopsSandbox 'DevopsSandbox/DevopsSandbox.csproj' 
     displayName: 'Dotnet Test'
   
   - script: |
