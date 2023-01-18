@@ -52,7 +52,7 @@ jobs:
   
   - script: |
       dotnet tool install dotnet-reportgenerator-globaltool --tool-path . 
-      ./reportgenerator "-reports:$(Build.SourcesDirectory)/coverage/DevopsSandbox.opencover.xml" "-targetdir:coverage/Cobertura" "-reporttypes:Cobertura;HTMLInline;HTMLChart"
+      ./reportgenerator "-reports:$(Build.SourcesDirectory)/coverage/DevopsSandbox/DevopsSandbox.opencover.xml" "-targetdir:coverage/Cobertura" "-reporttypes:Cobertura;HTMLInline;HTMLChart"
     displayName: Run Reportgenerator in Linux Image
 
 
