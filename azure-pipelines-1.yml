@@ -1,34 +1,80 @@
-# ASP.NET Core (.NET Framework)
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
-trigger:
-- main
-
-pool:
-  vmImage: 'windows-latest'
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  MajorVersion: 1
+  MinorVersion: 0
+  PatchVersion: 0
 
-steps:
-- task: NuGetToolInstaller@1
+trigger:
+  branches:
+    include:
+    - master
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+  paths:
+    include:
+    - DevopsSandbox/*
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+pr:
+  branches:
+    include:
+    - master
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  paths:
+    include:
+    - DevopsSandbox/*
+
+name: $(MajorVersion).$(MinorVersion).$(PatchVersion).$(Rev:r)
+
+jobs:
+- job: Build_Sandbox
+  pool:
+    vmImage: ubuntu-18.04
+  steps:
+  - checkout: self
+    fetchDepth: 0
+
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 4.4.1'
+    inputs:
+      versionSpec: 4.4.1
+  - task: SonarCloudPrepare@1
+    inputs:
+      SonarCloud: 'SonarCloud'
+      organization: 'hegdenaveensandbox'
+      scannerMode: 'MSBuild'
+      projectKey: 'AE:Project2'
+      projectName: 'AE:Project2'
+      extraProperties: |
+        # Additional properties that will be passed to the scanner, 
+        # Put one key=value per line, example:
+        sonar.exclusions=**/*.bin
+
+  - task: DotNetCoreCLI@2
+    displayName: Dotnet Build
+    inputs:
+      command: build
+      projects: '**/DevopsSandbox/DevopsSandbox.csproj'
+      arguments: '--configuration Release'
+
+  - script: |
+      dotnet test --logger trx --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(Build.SourcesDirectory)/coverage/DevopsSandbox 'DevopsSandbox/DevopsSandbox.csproj' 
+    displayName: 'Dotnet Test'
+
+  - task: SonarCloudAnalyze@1
+
+  - task: DotNetCoreCLI@2
+    displayName: Dotnet Publish
+    inputs:
+      command: 'publish'
+      projects: '**/DevopsSandbox/DevopsSandbox.csproj'
+      publishWebProjects: false
+      arguments: '--configuration Release --output $(System.DefaultWorkingDirectory)/DevopsSandbox/DevopsSandbox/bin/Release/net5.0'
+      zipAfterPublish: True
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.SourcesDirectory)/DevopsSandbox/DevopsSandbox/bin/Release/net5.0'
+      artifactName: 'sanbox-artifact'
+    displayName: 'Publish Artifact'    
