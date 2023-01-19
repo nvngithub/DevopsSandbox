@@ -42,10 +42,10 @@ jobs:
   - task: SonarCloudPrepare@1
     inputs:
       SonarCloud: 'SonarCloud'
-      organization: 'hegdenaveensandbox1'
+      organization: 'hegdenaveensandbox'
       scannerMode: 'MSBuild'
-      projectKey: 'AE:Project2'
-      projectName: 'AE:Project2'
+      projectKey: 'AE:Project21'
+      projectName: 'AE:Project21'
       extraProperties: |
         # Additional properties that will be passed to the scanner, 
         # Put one key=value per line, example:
