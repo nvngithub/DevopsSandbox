@@ -42,6 +42,7 @@ jobs:
   - task: SonarCloudPrepare@1
     inputs:
       SonarCloud: 'SonarCloud'
+      organization: 'hegdenaveensandbox1'
       scannerMode: 'MSBuild'
       projectKey: 'AE:Project2'
       projectName: 'AE:Project2'
